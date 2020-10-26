@@ -94,7 +94,7 @@ let players = [
 
 ];
 
-const totalCredit = 100;
+const totalCredit = 500;
 maxPlayers = 7;
 
 //.......................................................
@@ -115,15 +115,23 @@ let arNo =0;
 // setting my team to the right of the window
 const setMyteam = () => {
 
+    
     playersList = myTeam.reduce((playerhtml, player) => {
+
+        if(player.isCap){
+            badge = '(C)';
+        }else if (player.isViceCap){
+            badge = '(VC)';
+        }else badge = '';
+
 
         // console.log(player.skill)
 
-
+        
         playerhtml += `<div class = "col-12 text-center shadow p-1   mb-1 bg-white rounded-pill mx-auto" >
         <div class = "row my-auto">
         <div class = "col-3" style = "font-weight:600;text-transform:uppercase;font-size:.9em;">
-        <li>${player.name}</div>
+        <li>${player.name}${badge}</div>
 
 
          <div class = "col-3" style = "font-weight:600;text-transform:uppercase;font-size:.9em;">
@@ -178,13 +186,25 @@ const setPlayers = () => {
 const addPlayer = (name) => {
     // console.log(name);
     newPlayer = players.find(player => player.name === name);
-    
+    playerNo = wkNo+batNo+arNo+bowlNo;
+
+    const catogoryCheck =()=>{
+        
+        //add catagory limit here
+        switch (newPlayer.skill) {
+            case 'wk'  : return (wkNo < 4 ? true : false);
+            case 'bat' : return (batNo <4 ? true : false);
+            case 'ar'  : return (arNo <4 ? true : false);
+            case 'bowl': return (bowlNo <4 ? true : false);
+            default: alert('oops! something went wrong.');
+        }
+    }
 
     switch ( true){
-        case ! (remainingCredit >= newPlayer.credit): alert('insufficient credits'); break;
-        case !( wkNo < 4 && batNo < 4 && arNo < 4 && bowlNo < 4)  : alert('only 4 players can be choosen form each catogory'); break;
-        case ! (wkNo+batNo+arNo+bowlNo  <= maxPlayers) : alert(`only ${maxPlayers} player can be selected`); break;
-
+        case ! (remainingCredit >= newPlayer.credit): alert('insufficient credits'); break;   //credit check
+        case ! (playerNo+1  <= maxPlayers) : alert(`only ${maxPlayers} player can be selected`); break;   // max player check
+        case !(catogoryCheck()): alert('Max players reached for this catogory'); break;  // cagogary limit check
+        
         default:
             
             index = players.findIndex(player => player.name === name);
@@ -194,6 +214,12 @@ const addPlayer = (name) => {
                 case 'ar'  : arNo++ ; break;
                 case 'bowl': bowlNo++ ; break;
                 default: alert('oops! something went wrong.');
+            }
+            //setting cap and vicecap
+            switch (playerNo + 1){
+                case 1 :newPlayer.isCap = true; newPlayer.isViceCap=false; break;
+                case 2 :newPlayer.isCap = false; newPlayer.isViceCap=true; break;
+                default:newPlayer.isCap = false; newPlayer.isViceCap= false;
             }
 
             myTeam.push(newPlayer);
@@ -224,6 +250,13 @@ const removePlayer = (name) => {
         case 'bowl': bowlNo-- ; break;
         default: alert('oops! something went wrong.');
     }
+
+    //when cap or vice cap is suddenly removed
+    switch (index){
+        case 0 :if(myTeam[1]){myTeam[1].isCap = true; myTeam[1].isViceCap=false;} break; //making vc => cap
+        case 1 :if(myTeam[2]){myTeam[2].isCap = false; myTeam[2].isViceCap=true;} break; //making next => vicecap
+    }
+
     players.push(newPlayer);
     if (index > -1) {
         myTeam.splice(index, 1);
