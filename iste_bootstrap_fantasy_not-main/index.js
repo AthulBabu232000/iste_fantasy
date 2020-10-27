@@ -253,7 +253,8 @@ const removePlayer = (name) => {
 
     //when cap or vice cap is suddenly removed
     switch (index){
-        case 0 :if(myTeam[1]){myTeam[1].isCap = true; myTeam[1].isViceCap=false;} break; //making vc => cap
+        case 0 :if(myTeam[1]){myTeam[1].isCap = true; myTeam[1].isViceCap=false;}
+                if(myTeam[2]){myTeam[2].isCap = false; myTeam[2].isViceCap=true;} break; //making vc => cap
         case 1 :if(myTeam[2]){myTeam[2].isCap = false; myTeam[2].isViceCap=true;} break; //making next => vicecap
     }
 
